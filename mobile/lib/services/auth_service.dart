@@ -3,31 +3,42 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  final String baseUrl = "http://10.0.2.2:8000";
+  // localhost es correcto para Chrome. 
+  // Si usas emulador de Android, recuerda cambiarlo a 10.0.2.2
+  final String baseUrl = "http://localhost:8000";
 
-  Future login(String username, String password) async {
-    // Nota: El endpoint /token suele esperar un form-data, pero por simplicidad
-    // en este lab usaremos un POST simple según el backend construido.
-    final response = await http.post(Uri.parse('$baseUrl/token'));
+  Future<bool> login(String username, String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/token'),
+        // Enviamos las credenciales en el cuerpo de la petición
+        body: {
+          'username': username,
+          'password': password,
+        },
+      );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final String token = data['access_token'];
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final String token = data['access_token'];
 
-      // Guardar token en el almacenamiento del teléfono
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('jwt_token', token);
-      return true;
+        // Guardar token en el almacenamiento persistente
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('jwt_token', token);
+        return true;
+      }
+    } catch (e) {
+      print("Error de conexión: $e");
     }
     return false;
   }
 
-  Future getToken() async {
+  Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('jwt_token');
   }
 
-  Future logout() async {
+  Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('jwt_token');
   }

@@ -64,7 +64,6 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // Navegar a la pantalla de agregar y refrescar al volver
           await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => AddEstacionScreen()),
@@ -75,5 +74,4 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-}
 }
