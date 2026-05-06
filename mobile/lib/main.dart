@@ -27,9 +27,13 @@ class SMATApp extends StatelessWidget {
           if (snapshot.hasData && snapshot.data != null) {
             return const HomePage();
           }
-          return const LoginScreen();
+          return LoginScreen();
         },
       ),
+      routes: {
+        '/login': (context) => LoginScreen(),
+        '/home': (context) => const HomePage(),
+      },
     );
   }
 }
